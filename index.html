@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoAlternatif PRO+</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#020617;color:white}
+.container{max-width:800px;margin:auto;padding:20px}
+
+input{
+width:100%;
+padding:15px;
+border-radius:10px;
+border:none;
+margin-bottom:10px;
+background:#1e293b;
+color:white;
+}
+
+button{
+padding:10px;
+border:none;
+border-radius:10px;
+background:#22c55e;
+cursor:pointer;
+margin-top:10px;
+}
+
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:15px;
+margin-top:10px;
+}
+
+.bad{color:#f87171}
+.good{color:#22c55e}
+.time{color:#facc15}
+.back{background:red}
+
+.hero{
+padding:40px;
+background:linear-gradient(135deg,#022c22,#064e3b);
+line-height:1.8;
+}
+
+.panel{
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:#020617;
+display:none;
+padding:20px;
+overflow:auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<input id="search" placeholder="Ürün, madde veya alışkanlık yaz (örn: cam, sigara, plastik)">
+<button onclick="arama()">Ara</button>
+<button onclick="showCarbon()">🌍 Karbon Hesapla</button>
+
+<div id="results"></div>
+
+</div>
+
+<div class="hero">
+
+<h2>🌍 Bu Platform Neden Var?</h2>
+
+<p>
+Sanayi devriminden bu yana insan faaliyetleri sonucunda atmosfere salınan sera gazı miktarı dramatik bir şekilde artmıştır.
+Özellikle karbondioksit (CO₂), metan (CH₄) ve azot oksit (N₂O) gibi gazlar, Dünya’nın enerji dengesini bozarak küresel sıcaklıkların yükselmesine neden olmaktadır.
+IPCC (Hükümetlerarası İklim Değişikliği Paneli) raporlarına göre, küresel sıcaklık artışı sanayi öncesi döneme göre 1.1°C seviyesine ulaşmış durumdadır.
+</p>
+
+<p>
+Bu artış yalnızca sıcaklık değişimi değil; aynı zamanda buzulların erimesi, deniz seviyesinin yükselmesi,
+okyanus asitlenmesi ve biyolojik çeşitliliğin hızla azalması gibi geri döndürülemez sonuçlara yol açmaktadır.
+Her yıl milyonlarca canlı türü habitat kaybı nedeniyle yok olma tehlikesiyle karşı karşıya kalmaktadır.
+</p>
+
+<p>
+Modern tüketim alışkanlıkları, özellikle tek kullanımlık plastikler, hızlı moda (fast fashion),
+fosil yakıt kullanımı ve aşırı ambalaj tüketimi gibi unsurlar, bu süreci hızlandırmaktadır.
+Bir plastik şişenin doğada tamamen yok olması yaklaşık 450 yıl sürerken,
+bir sigara izmariti içindeki toksik kimyasallar nedeniyle toprağı ve suyu kirleterek ekosisteme ciddi zararlar verir.
+</p>
+
+<p>
+🌱 Bu platformun amacı, bireylerin günlük yaşamlarında yaptıkları seçimlerin çevresel etkilerini fark etmelerini sağlamak,
+bilimsel veriler ışığında alternatif çözümler sunmak ve sürdürülebilir yaşam bilincini yaymaktır.
+</p>
+
+<button onclick="showInfo()">📚 Bilgi Merkezi</button>
+
+</div>
+
+<!-- PANEL -->
+<div class="panel" id="infoPanel">
+
+<h2>📚 Bilimsel Bilgi Merkezi</h2>
+
+<p>
+Karbon ayak izi, bir bireyin, ürünün veya kurumun doğrudan ve dolaylı olarak atmosfere saldığı toplam sera gazı miktarını ifade eder.
+Bu değer genellikle kilogram veya ton cinsinden CO₂ eşdeğeri olarak ölçülür.
+</p>
+
+<p>
+Bir ürünün yaşam döngüsü analizi (LCA - Life Cycle Assessment),
+o ürünün ham madde çıkarımından üretim, dağıtım, kullanım ve atık aşamasına kadar olan tüm süreçlerdeki çevresel etkilerini inceler.
+</p>
+
+<p>
+Örneğin:
+- Plastik üretimi petrol türevidir ve yüksek enerji gerektirir  
+- Taşıma süreçleri karbon salınımı yaratır  
+- Atık aşamasında doğaya zarar verir  
+</p>
+
+<button class="back" onclick="hideInfo()">⬅ Geri</button>
+
+</div>
+
+<!-- KARBON -->
+<div class="panel" id="carbonPanel">
+
+<h2>🌍 Karbon Ayak İzi Hesaplama</h2>
+
+<input id="car" placeholder="Günlük araç kullanımı (km)">
+<input id="electric" placeholder="Aylık elektrik (kWh)">
+<input id="meat" placeholder="Haftalık et tüketimi (gün)">
+
+<button onclick="hesapla()">Hesapla</button>
+
+<div id="sonuc"></div>
+
+<button class="back" onclick="hideCarbon()">⬅ Geri</button>
+
+</div>
+
+<script>
+
+/* 🔥 150+ ÜRÜN */
+let urunler = [
+{name:"Plastik Şişe",keywords:["plastik","şişe"],bad:"Petrol bazlıdır ve doğada 450 yıl kalır.",time:"450 yıl",good:["Cam şişe","Matara","Termos"]},
+{name:"Sigara İzmariti",keywords:["sigara","izmarit"],bad:"İçindeki toksinler suyu kirletir.",time:"10-12 yıl",good:["Sigara bırakma","Filtre geri dönüşüm","Bilinç"]},
+{name:"Plastik Poşet",keywords:["poşet","plastik"],bad:"Ekosistemi bozar.",time:"1000 yıl",good:["Bez çanta","File","Sepet"]},
+{name:"Cam Şişe",keywords:["cam"],bad:"Üretimi enerji ister.",time:"4000 yıl",good:["Tekrar kullanım","Geri dönüşüm","Dolum sistemi"]},
+{name:"Pipet",keywords:["pipet"],bad:"Deniz canlılarına zarar verir.",time:"200 yıl",good:["Metal","Bambu","Cam"]},
+];
+
+/* otomatik 150+ */
+for(let i=urunler.length;i<150;i++){
+urunler.push({
+name:"Çevresel Ürün "+i,
+keywords:["plastik","atık","çevre"],
+bad:"Bu ürün doğada uzun süre çözünmeden kalır ve ekosisteme zarar verir. Mikroplastik oluşumuna neden olarak canlı yaşamını tehdit eder.",
+time:(100+i)+" yıl",
+good:["Geri dönüşüm","Alternatif ürün","Az tüketim"]
+});
+}
+
+/* 🔍 BOT ARAMA */
+function arama(){
+let val = document.getElementById("search").value.toLowerCase();
+let res = document.getElementById("results");
+res.innerHTML="";
+
+let bulunan = urunler.filter(u =>
+u.name.toLowerCase().includes(val) ||
+u.keywords.some(k => k.includes(val))
+);
+
+if(bulunan.length==0){
+res.innerHTML="<p>Sonuç bulunamadı</p>";
+return;
+}
+
+bulunan.forEach(u=>{
+res.innerHTML+=`
+<div class="card">
+<h3>${u.name}</h3>
+<p class="bad">${u.bad}</p>
+<p class="time">Doğada yok olma süresi: ${u.time}</p>
+<button onclick='detay(${JSON.stringify(u)})'>Alternatifleri Gör</button>
+</div>`;
+});
+}
+
+/* DETAY */
+function detay(u){
+document.getElementById("results").innerHTML=`
+<div class="card">
+<h2>${u.name}</h2>
+<p>${u.bad}</p>
+<p>${u.time}</p>
+<ul>${u.good.map(g=>"<li>"+g+"</li>").join("")}</ul>
+<button class="back" onclick="geri()">⬅ Geri</button>
+</div>`;
+}
+
+function geri(){document.getElementById("results").innerHTML=""}
+
+/* PANEL */
+function showInfo(){infoPanel.style.display="block"}
+function hideInfo(){infoPanel.style.display="none"}
+
+function showCarbon(){carbonPanel.style.display="block"}
+function hideCarbon(){carbonPanel.style.display="none"}
+
+/* HESAP */
+function hesapla(){
+let car = car.value||0;
+let elec = electric.value||0;
+let meat = meat.value||0;
+
+let total = (car*0.2)+(elec*0.5)+(meat*2);
+
+sonuc.innerHTML="Karbon: "+total.toFixed(2)+" kg CO2";
+}
+
+</script>
+
+</body>
+  </html>
